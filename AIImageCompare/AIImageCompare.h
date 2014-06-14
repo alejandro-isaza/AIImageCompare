@@ -19,4 +19,12 @@
 
 #import <UIKit/UIKit.h>
 
+/**
+ Find the Mean Absolute Error (MAE) between two images of the same size. This is the most common way of finding if two images differ and by what amount.
+ */
 UIKIT_EXTERN CGFloat AIImageMeanAbosulteError(UIImage* image1, UIImage* image2);
+
+/**
+ Find the Root Mean Square Error (RMSE) between two images of the same size. The RMSE puts more weight in large-magnitude variations than the MAE.
+ */
+UIKIT_EXTERN CGFloat AIImageRootMeanSquareError(UIImage* image1, UIImage* image2);

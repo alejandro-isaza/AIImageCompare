@@ -46,4 +46,17 @@
     XCTAssertEqualWithAccuracy(mae, 0.00012, 0.00001, @"The MAE of different images should be around 0.00012");
 }
 
+- (void)testRootMeanSquareErrorSame {
+    UIImage* image = [self testImageWithName:@"1123"];
+    CGFloat rmse = AIImageRootMeanSquareError(image, image);
+    XCTAssertEqual(rmse, 0, @"The RMSE of an image with itself should be 0");
+}
+
+- (void)testRootMeanSquareErrorDifferent {
+    UIImage* image1 = [self testImageWithName:@"1123"];
+    UIImage* image2 = [self testImageWithName:@"1124"];
+    CGFloat rmse = AIImageRootMeanSquareError(image1, image2);
+    XCTAssertEqualWithAccuracy(rmse, 0.0097, 0.0001, @"The RMSE of different images should be around 0.00012");
+}
+
 @end

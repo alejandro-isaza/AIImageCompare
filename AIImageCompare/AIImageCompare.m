@@ -18,6 +18,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "AIImageCompare.h"
+#include <tgmath.h>
 
 static const NSUInteger BytesPerPixel = 4;
 
@@ -36,13 +37,37 @@ UIKIT_EXTERN CGFloat AIImageMeanAbosulteError(UIImage* image1, UIImage* image2) 
     
     CGFloat sum = 0;
     for (NSUInteger i = 0; i < size; i += 1) {
-        sum += abs(data2[i] - data1[i]) / 255.0;
+        CGFloat diff = (data2[i] - data1[i]) / 255.0;
+        sum += fabs(diff);
     }
     
     CGContextRelease(ctx1);
     CGContextRelease(ctx2);
     
     return sum / (CGFloat)size;
+}
+
+UIKIT_EXTERN CGFloat AIImageRootMeanSquareError(UIImage* image1, UIImage* image2) {
+    NSCAssert(CGSizeEqualToSize(image1.size, image2.size), @"Images should have the same size");
+    
+    CGContextRef ctx1 = CreateRGBABitmapContext(image1.CGImage);
+    CGContextRef ctx2 = CreateRGBABitmapContext(image2.CGImage);
+    
+    const UInt8* data1 = CGBitmapContextGetData(ctx1);
+    const UInt8* data2 = CGBitmapContextGetData(ctx2);
+    
+    NSUInteger size = (NSUInteger)(CGBitmapContextGetWidth(ctx1) * CGBitmapContextGetHeight(ctx1)) * BytesPerPixel;
+    
+    CGFloat sum = 0;
+    for (NSUInteger i = 0; i < size; i += 1) {
+        CGFloat diff = (data2[i] - data1[i]) / 255.0;
+        sum += diff*diff;
+    }
+    
+    CGContextRelease(ctx1);
+    CGContextRelease(ctx2);
+    
+    return sqrt(sum / (CGFloat)size);
 }
 
 CGContextRef CreateRGBABitmapContext(CGImageRef inImage) {
