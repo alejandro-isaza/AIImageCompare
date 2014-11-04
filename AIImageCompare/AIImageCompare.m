@@ -26,6 +26,7 @@ CGContextRef CreateRGBABitmapContext(CGImageRef inImage);
 
 UIKIT_EXTERN CGFloat AIImageMeanAbosulteError(UIImage* image1, UIImage* image2) {
     NSCAssert(CGSizeEqualToSize(image1.size, image2.size), @"Images should have the same size");
+    NSCAssert(image1.scale == image2.scale, @"Images should have the same scale");
 
     CGContextRef ctx1 = CreateRGBABitmapContext(image1.CGImage);
     CGContextRef ctx2 = CreateRGBABitmapContext(image2.CGImage);
