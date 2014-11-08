@@ -17,14 +17,22 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#import <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+typedef UIImage AIImage;
+#else
+#import <AppKit/AppKit.h>
+typedef NSImage AIImage;
+#endif
 
 /**
  Find the Mean Absolute Error (MAE) between two images of the same size. This is the most common way of finding if two images differ and by what amount.
  */
-UIKIT_EXTERN CGFloat AIImageMeanAbosulteError(UIImage* image1, UIImage* image2);
+CG_EXTERN CGFloat AIImageMeanAbosulteError(AIImage* image1, AIImage* image2);
 
 /**
  Find the Root Mean Square Error (RMSE) between two images of the same size. The RMSE puts more weight in large-magnitude variations than the MAE.
  */
-UIKIT_EXTERN CGFloat AIImageRootMeanSquareError(UIImage* image1, UIImage* image2);
+CG_EXTERN CGFloat AIImageRootMeanSquareError(AIImage* image1, AIImage* image2);

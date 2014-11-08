@@ -24,12 +24,24 @@ static const NSUInteger BytesPerPixel = 4;
 
 CGContextRef CreateRGBABitmapContext(CGImageRef inImage);
 
-UIKIT_EXTERN CGFloat AIImageMeanAbosulteError(UIImage* image1, UIImage* image2) {
-    NSCAssert(CGSizeEqualToSize(image1.size, image2.size), @"Images should have the same size");
-    NSCAssert(image1.scale == image2.scale, @"Images should have the same scale");
+#if TARGET_OS_IPHONE
+CGImageRef CGImageFromImage(AIImage* image) {
+    return image.CGImage;
+}
+#else
+CGImageRef CGImageFromImage(AIImage* image) {
+    return [image CGImageForProposedRect:nil context:nil hints:nil];
+}
+#endif
 
-    CGContextRef ctx1 = CreateRGBABitmapContext(image1.CGImage);
-    CGContextRef ctx2 = CreateRGBABitmapContext(image2.CGImage);
+CG_EXTERN CGFloat AIImageMeanAbosulteError(AIImage* image1, AIImage* image2) {
+    NSCAssert(CGSizeEqualToSize(image1.size, image2.size), @"Images should have the same size");
+#if TARGET_OS_IPHONE
+    NSCAssert(image1.scale == image2.scale, @"Images should have the same scale");
+#endif
+
+    CGContextRef ctx1 = CreateRGBABitmapContext(CGImageFromImage(image1));
+    CGContextRef ctx2 = CreateRGBABitmapContext(CGImageFromImage(image2));
     
     const UInt8* data1 = CGBitmapContextGetData(ctx1);
     const UInt8* data2 = CGBitmapContextGetData(ctx2);
@@ -48,11 +60,11 @@ UIKIT_EXTERN CGFloat AIImageMeanAbosulteError(UIImage* image1, UIImage* image2) 
     return sum / (CGFloat)size;
 }
 
-UIKIT_EXTERN CGFloat AIImageRootMeanSquareError(UIImage* image1, UIImage* image2) {
+CG_EXTERN CGFloat AIImageRootMeanSquareError(AIImage* image1, AIImage* image2) {
     NSCAssert(CGSizeEqualToSize(image1.size, image2.size), @"Images should have the same size");
     
-    CGContextRef ctx1 = CreateRGBABitmapContext(image1.CGImage);
-    CGContextRef ctx2 = CreateRGBABitmapContext(image2.CGImage);
+    CGContextRef ctx1 = CreateRGBABitmapContext(CGImageFromImage(image1));
+    CGContextRef ctx2 = CreateRGBABitmapContext(CGImageFromImage(image2));
     
     const UInt8* data1 = CGBitmapContextGetData(ctx1);
     const UInt8* data2 = CGBitmapContextGetData(ctx2);
