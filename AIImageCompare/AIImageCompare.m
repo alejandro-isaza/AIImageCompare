@@ -35,19 +35,20 @@ CGImageRef CGImageFromImage(AIImage* image) {
 #endif
 
 CG_EXTERN CGFloat AIImageMeanAbosulteError(AIImage* image1, AIImage* image2) {
-    NSCAssert(CGSizeEqualToSize(image1.size, image2.size), @"Images should have the same size");
-#if TARGET_OS_IPHONE
-    NSCAssert(image1.scale == image2.scale, @"Images should have the same scale");
-#endif
+    CGImageRef cgimage1 = CGImageFromImage(image1);
+    CGImageRef cgimage2 = CGImageFromImage(image2);
 
-    CGContextRef ctx1 = CreateRGBABitmapContext(CGImageFromImage(image1));
-    CGContextRef ctx2 = CreateRGBABitmapContext(CGImageFromImage(image2));
+    NSCAssert(CGImageGetWidth(cgimage1) == CGImageGetWidth(cgimage2), @"Images should have the same size");
+    NSCAssert(CGImageGetHeight(cgimage2) == CGImageGetHeight(cgimage2), @"Images should have the same size");
+
+    CGContextRef ctx1 = CreateRGBABitmapContext(cgimage1);
+    CGContextRef ctx2 = CreateRGBABitmapContext(cgimage2);
     
     const UInt8* data1 = CGBitmapContextGetData(ctx1);
     const UInt8* data2 = CGBitmapContextGetData(ctx2);
     
     NSUInteger size = (NSUInteger)(CGBitmapContextGetWidth(ctx1) * CGBitmapContextGetHeight(ctx1)) * BytesPerPixel;
-    
+
     CGFloat sum = 0;
     for (NSUInteger i = 0; i < size; i += 1) {
         CGFloat diff = (data2[i] - data1[i]) / 255.0;
