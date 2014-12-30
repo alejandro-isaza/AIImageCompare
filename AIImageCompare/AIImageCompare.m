@@ -34,7 +34,7 @@ CGImageRef CGImageFromImage(AIImage* image) {
 }
 #endif
 
-CG_EXTERN CGFloat AIImageMeanAbosulteError(AIImage* image1, AIImage* image2) {
+CG_EXTERN CGFloat AIImageMeanAbsoluteError(AIImage* image1, AIImage* image2) {
     CGImageRef cgimage1 = CGImageFromImage(image1);
     CGImageRef cgimage2 = CGImageFromImage(image2);
 
