@@ -30,7 +30,7 @@ typedef NSImage AIImage;
 /**
  Find the Mean Absolute Error (MAE) between two images of the same size. This is the most common way of finding if two images differ and by what amount.
  */
-CG_EXTERN CGFloat AIImageMeanAbosulteError(AIImage* image1, AIImage* image2);
+CG_EXTERN CGFloat AIImageMeanAbsoluteError(AIImage* image1, AIImage* image2);
 
 /**
  Find the Root Mean Square Error (RMSE) between two images of the same size. The RMSE puts more weight in large-magnitude variations than the MAE.

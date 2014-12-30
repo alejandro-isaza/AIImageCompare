@@ -35,14 +35,14 @@
 
 - (void)testMeanAbsoluteErrorSame {
     UIImage* image = [self testImageWithName:@"1123"];
-    CGFloat mae = AIImageMeanAbosulteError(image, image);
+    CGFloat mae = AIImageMeanAbsoluteError(image, image);
     XCTAssertEqual(mae, 0, @"The MAE of an image with itself should be 0");
 }
 
 - (void)testMeanAbsoluteErrorDifferent {
     UIImage* image1 = [self testImageWithName:@"1123"];
     UIImage* image2 = [self testImageWithName:@"1124"];
-    CGFloat mae = AIImageMeanAbosulteError(image1, image2);
+    CGFloat mae = AIImageMeanAbsoluteError(image1, image2);
     XCTAssertEqualWithAccuracy(mae, 0.00012, 0.00001, @"The MAE of different images should be around 0.00012");
 }
 
