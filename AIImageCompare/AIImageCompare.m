@@ -20,7 +20,7 @@
 #import "AIImageCompare.h"
 #include <tgmath.h>
 
-static const NSUInteger BytesPerPixel = 4;
+static const NSUInteger kBytesPerPixel = 4;
 
 CGContextRef CreateRGBABitmapContext(CGImageRef inImage);
 
@@ -47,10 +47,10 @@ CG_EXTERN CGFloat AIImageMeanAbsoluteError(AIImage* image1, AIImage* image2) {
     const UInt8* data1 = CGBitmapContextGetData(ctx1);
     const UInt8* data2 = CGBitmapContextGetData(ctx2);
     
-    NSUInteger size = (NSUInteger)(CGBitmapContextGetWidth(ctx1) * CGBitmapContextGetHeight(ctx1)) * BytesPerPixel;
+    NSUInteger byteCount = (NSUInteger)(CGBitmapContextGetWidth(ctx1) * CGBitmapContextGetHeight(ctx1)) * kBytesPerPixel;
 
     CGFloat sum = 0;
-    for (NSUInteger i = 0; i < size; i += 1) {
+    for (NSUInteger i = 0; i < byteCount; i += 1) {
         CGFloat diff = (data2[i] - data1[i]) / 255.0;
         sum += fabs(diff);
     }
@@ -58,7 +58,7 @@ CG_EXTERN CGFloat AIImageMeanAbsoluteError(AIImage* image1, AIImage* image2) {
     CGContextRelease(ctx1);
     CGContextRelease(ctx2);
     
-    return sum / (CGFloat)size;
+    return sum / (CGFloat)byteCount;
 }
 
 CG_EXTERN AIComponents AIImageMeanAbsoluteErrorByComponent(AIImage* image1, AIImage* image2) {
@@ -76,9 +76,10 @@ CG_EXTERN AIComponents AIImageMeanAbsoluteErrorByComponent(AIImage* image1, AIIm
     const UInt8* data1 = CGBitmapContextGetData(ctx1);
     const UInt8* data2 = CGBitmapContextGetData(ctx2);
 
-    NSUInteger size = (NSUInteger)(CGBitmapContextGetWidth(ctx1) * CGBitmapContextGetHeight(ctx1)) * BytesPerPixel;
+    NSUInteger pixelCount = (NSUInteger)(CGBitmapContextGetWidth(ctx1) * CGBitmapContextGetHeight(ctx1));
+    NSUInteger byteCount = pixelCount * kBytesPerPixel;
 
-    for (NSUInteger i = 0; i < size; i += 4) {
+    for (NSUInteger i = 0; i < byteCount; i += kBytesPerPixel) {
         components.red   += fabs((data2[i+0] - data1[i+0]) / 255.0);
         components.green += fabs((data2[i+1] - data1[i+1]) / 255.0);
         components.blue  += fabs((data2[i+2] - data1[i+2]) / 255.0);
@@ -88,10 +89,10 @@ CG_EXTERN AIComponents AIImageMeanAbsoluteErrorByComponent(AIImage* image1, AIIm
     CGContextRelease(ctx1);
     CGContextRelease(ctx2);
 
-    components.red   /= (CGFloat)size;
-    components.green /= (CGFloat)size;
-    components.blue  /= (CGFloat)size;
-    components.alpha /= (CGFloat)size;
+    components.red   /= (CGFloat)pixelCount;
+    components.green /= (CGFloat)pixelCount;
+    components.blue  /= (CGFloat)pixelCount;
+    components.alpha /= (CGFloat)pixelCount;
     return components;
 }
 
@@ -104,10 +105,10 @@ CG_EXTERN CGFloat AIImageRootMeanSquareError(AIImage* image1, AIImage* image2) {
     const UInt8* data1 = CGBitmapContextGetData(ctx1);
     const UInt8* data2 = CGBitmapContextGetData(ctx2);
     
-    NSUInteger size = (NSUInteger)(CGBitmapContextGetWidth(ctx1) * CGBitmapContextGetHeight(ctx1)) * BytesPerPixel;
+    NSUInteger byteCount = (NSUInteger)(CGBitmapContextGetWidth(ctx1) * CGBitmapContextGetHeight(ctx1)) * kBytesPerPixel;
     
     CGFloat sum = 0;
-    for (NSUInteger i = 0; i < size; i += 1) {
+    for (NSUInteger i = 0; i < byteCount; i += 1) {
         CGFloat diff = (data2[i] - data1[i]) / 255.0;
         sum += diff*diff;
     }
@@ -115,7 +116,7 @@ CG_EXTERN CGFloat AIImageRootMeanSquareError(AIImage* image1, AIImage* image2) {
     CGContextRelease(ctx1);
     CGContextRelease(ctx2);
     
-    return sqrt(sum / (CGFloat)size);
+    return sqrt(sum / (CGFloat)byteCount);
 }
 
 CG_EXTERN NSUInteger AIImageDifferentPixelCount(AIImage* image1, AIImage* image2) {
@@ -127,10 +128,10 @@ CG_EXTERN NSUInteger AIImageDifferentPixelCount(AIImage* image1, AIImage* image2
     const UInt8* data1 = CGBitmapContextGetData(ctx1);
     const UInt8* data2 = CGBitmapContextGetData(ctx2);
 
-    NSUInteger size = (NSUInteger)(CGBitmapContextGetWidth(ctx1) * CGBitmapContextGetHeight(ctx1)) * BytesPerPixel;
+    NSUInteger byteCount = (NSUInteger)(CGBitmapContextGetWidth(ctx1) * CGBitmapContextGetHeight(ctx1)) * kBytesPerPixel;
 
     NSUInteger sum = 0;
-    for (NSUInteger i = 0; i < size; i += 4) {
+    for (NSUInteger i = 0; i < byteCount; i += kBytesPerPixel) {
         UInt32 value1 = *(UInt32*)&data1[i];
         UInt32 value2 = *(UInt32*)&data2[i];
         if (value1 != value2)
@@ -154,7 +155,7 @@ CG_EXTERN CGFloat AIImageDifferentPixelRatio(AIImage* image1, AIImage* image2) {
 CGContextRef CreateRGBABitmapContext(CGImageRef inImage) {
     size_t pixelsWide = CGImageGetWidth(inImage);
     size_t pixelsHigh = CGImageGetHeight(inImage);
-    size_t bitmapBytesPerRow = pixelsWide * BytesPerPixel;
+    size_t bitmapBytesPerRow = pixelsWide * kBytesPerPixel;
     
     // Use the generic RGB color space.
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
