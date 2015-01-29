@@ -36,3 +36,13 @@ CG_EXTERN CGFloat AIImageMeanAbsoluteError(AIImage* image1, AIImage* image2);
  Find the Root Mean Square Error (RMSE) between two images of the same size. The RMSE puts more weight in large-magnitude variations than the MAE.
  */
 CG_EXTERN CGFloat AIImageRootMeanSquareError(AIImage* image1, AIImage* image2);
+
+/**
+ Find the number of pixels that are different between two images of the same size.
+ */
+CG_EXTERN NSUInteger AIImageDifferentPixelCount(AIImage* image1, AIImage* image2);
+
+/**
+ Find the ratio of pixels that are different between two images of the same size. This value is between 0 and 1, where 0 means the images are identical and 1 means that the images have no pixels in common.
+ */
+CG_EXTERN CGFloat AIImageDifferentPixelRatio(AIImage* image1, AIImage* image2);

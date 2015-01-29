@@ -84,6 +84,36 @@ CG_EXTERN CGFloat AIImageRootMeanSquareError(AIImage* image1, AIImage* image2) {
     return sqrt(sum / (CGFloat)size);
 }
 
+CG_EXTERN NSUInteger AIImageDifferentPixelCount(AIImage* image1, AIImage* image2) {
+    NSCAssert(CGSizeEqualToSize(image1.size, image2.size), @"Images should have the same size");
+
+    CGContextRef ctx1 = CreateRGBABitmapContext(CGImageFromImage(image1));
+    CGContextRef ctx2 = CreateRGBABitmapContext(CGImageFromImage(image2));
+
+    const UInt8* data1 = CGBitmapContextGetData(ctx1);
+    const UInt8* data2 = CGBitmapContextGetData(ctx2);
+
+    NSUInteger size = (NSUInteger)(CGBitmapContextGetWidth(ctx1) * CGBitmapContextGetHeight(ctx1)) * BytesPerPixel;
+
+    NSUInteger sum = 0;
+    for (NSUInteger i = 0; i < size; i += 4) {
+        UInt32 value1 = *(UInt32*)&data1[i];
+        UInt32 value2 = *(UInt32*)&data2[i];
+        if (value1 != value2)
+            sum += 1;
+    }
+
+    CGContextRelease(ctx1);
+    CGContextRelease(ctx2);
+
+    return sum;
+}
+
+CG_EXTERN CGFloat AIImageDifferentPixelRatio(AIImage* image1, AIImage* image2) {
+    CGFloat pixelCount = AIImageDifferentPixelCount(image1, image2);
+    return pixelCount / (image1.size.width * image1.size.height);
+}
+
 CGContextRef CreateRGBABitmapContext(CGImageRef inImage) {
     size_t pixelsWide = CGImageGetWidth(inImage);
     size_t pixelsHigh = CGImageGetHeight(inImage);

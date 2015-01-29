@@ -56,7 +56,27 @@
     UIImage* image1 = [self testImageWithName:@"1123"];
     UIImage* image2 = [self testImageWithName:@"1124"];
     CGFloat rmse = AIImageRootMeanSquareError(image1, image2);
-    XCTAssertEqualWithAccuracy(rmse, 0.0097, 0.0001, @"The RMSE of different images should be around 0.00012");
+    XCTAssertEqualWithAccuracy(rmse, 0.0097, 0.0001, @"The RMSE of different images should be around 0.0097");
+}
+
+- (void)testDifferentPixelCountZero {
+    UIImage* image = [self testImageWithName:@"1123"];
+    NSUInteger count = AIImageDifferentPixelCount(image, image);
+    XCTAssertEqual(count, 0, @"The different pixel count of an image with itself should be 0");
+}
+
+- (void)testDifferentPixelCountNotZero {
+    UIImage* image1 = [self testImageWithName:@"1123"];
+    UIImage* image2 = [self testImageWithName:@"1124"];
+    NSUInteger count = AIImageDifferentPixelCount(image1, image2);
+    XCTAssertGreaterThan(count, 0, @"The different pixel count should be greater than zero");
+}
+
+- (void)testDifferentPixelRatio {
+    UIImage* image1 = [self testImageWithName:@"1123"];
+    UIImage* image2 = [self testImageWithName:@"1124"];
+    CGFloat ratio = AIImageDifferentPixelRatio(image1, image2);
+    XCTAssertEqualWithAccuracy(ratio, 0.00082, 0.00001, @"The ratio of different pixels should be around 0.00082");
 }
 
 @end
