@@ -110,8 +110,11 @@ CG_EXTERN NSUInteger AIImageDifferentPixelCount(AIImage* image1, AIImage* image2
 }
 
 CG_EXTERN CGFloat AIImageDifferentPixelRatio(AIImage* image1, AIImage* image2) {
+    CGImageRef image = CGImageFromImage(image1);
+    size_t pixelsWide = CGImageGetWidth(image);
+    size_t pixelsHigh = CGImageGetHeight(image);
     CGFloat pixelCount = AIImageDifferentPixelCount(image1, image2);
-    return pixelCount / (image1.size.width * image1.size.height);
+    return pixelCount / (pixelsWide * pixelsHigh);
 }
 
 CGContextRef CreateRGBABitmapContext(CGImageRef inImage) {
