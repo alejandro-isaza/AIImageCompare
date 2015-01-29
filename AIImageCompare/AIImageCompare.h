@@ -27,10 +27,23 @@ typedef UIImage AIImage;
 typedef NSImage AIImage;
 #endif
 
+typedef struct {
+    CGFloat red;
+    CGFloat blue;
+    CGFloat green;
+    CGFloat alpha;
+} AIComponents;
+
+
 /**
  Find the Mean Absolute Error (MAE) between two images of the same size. This is the most common way of finding if two images differ and by what amount.
  */
 CG_EXTERN CGFloat AIImageMeanAbsoluteError(AIImage* image1, AIImage* image2);
+
+/**
+ Find the Mean Absolute Error (MAE) for each color component (RGBA) between two images of the same size.
+ */
+CG_EXTERN AIComponents AIImageMeanAbsoluteErrorByComponent(AIImage* image1, AIImage* image2);
 
 /**
  Find the Root Mean Square Error (RMSE) between two images of the same size. The RMSE puts more weight in large-magnitude variations than the MAE.

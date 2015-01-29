@@ -61,6 +61,40 @@ CG_EXTERN CGFloat AIImageMeanAbsoluteError(AIImage* image1, AIImage* image2) {
     return sum / (CGFloat)size;
 }
 
+CG_EXTERN AIComponents AIImageMeanAbsoluteErrorByComponent(AIImage* image1, AIImage* image2) {
+    AIComponents components = {0, 0, 0, 0};
+
+    CGImageRef cgimage1 = CGImageFromImage(image1);
+    CGImageRef cgimage2 = CGImageFromImage(image2);
+
+    NSCAssert(CGImageGetWidth(cgimage1) == CGImageGetWidth(cgimage2), @"Images should have the same size");
+    NSCAssert(CGImageGetHeight(cgimage2) == CGImageGetHeight(cgimage2), @"Images should have the same size");
+
+    CGContextRef ctx1 = CreateRGBABitmapContext(cgimage1);
+    CGContextRef ctx2 = CreateRGBABitmapContext(cgimage2);
+
+    const UInt8* data1 = CGBitmapContextGetData(ctx1);
+    const UInt8* data2 = CGBitmapContextGetData(ctx2);
+
+    NSUInteger size = (NSUInteger)(CGBitmapContextGetWidth(ctx1) * CGBitmapContextGetHeight(ctx1)) * BytesPerPixel;
+
+    for (NSUInteger i = 0; i < size; i += 4) {
+        components.red   += fabs((data2[i+0] - data1[i+0]) / 255.0);
+        components.green += fabs((data2[i+1] - data1[i+1]) / 255.0);
+        components.blue  += fabs((data2[i+2] - data1[i+2]) / 255.0);
+        components.alpha += fabs((data2[i+3] - data1[i+3]) / 255.0);
+    }
+
+    CGContextRelease(ctx1);
+    CGContextRelease(ctx2);
+
+    components.red   /= (CGFloat)size;
+    components.green /= (CGFloat)size;
+    components.blue  /= (CGFloat)size;
+    components.alpha /= (CGFloat)size;
+    return components;
+}
+
 CG_EXTERN CGFloat AIImageRootMeanSquareError(AIImage* image1, AIImage* image2) {
     NSCAssert(CGSizeEqualToSize(image1.size, image2.size), @"Images should have the same size");
     
