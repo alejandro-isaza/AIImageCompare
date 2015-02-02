@@ -34,6 +34,23 @@ typedef struct {
     CGFloat alpha;
 } AIComponents;
 
+typedef struct {
+#ifdef __BIG_ENDIAN__
+    UInt8 alpha, red, green, blue;
+#else
+    UInt8 red, green, blue, alpha;
+#endif
+} Pixel;
+
+/**
+ Perform the given block operation on each byte of the two images. Returns the byte count of the first image.
+ */
+CG_EXTERN NSUInteger AIImageForEachByte(AIImage* image1, AIImage* image2, void (^block)(UInt8 byte1, UInt8 byte2));
+
+/**
+ Perform the given block operation on each pixel of the two images. Returns the pixel count of the first image.
+ */
+CG_EXTERN NSUInteger AIImageForEachPixel(AIImage* image1, AIImage* image2, void (^block)(Pixel pixel1, Pixel pixel2));
 
 /**
  Find the Mean Absolute Error (MAE) between two images of the same size. This is the most common way of finding if two images differ and by what amount.
@@ -44,6 +61,11 @@ CG_EXTERN CGFloat AIImageMeanAbsoluteError(AIImage* image1, AIImage* image2);
  Find the Mean Absolute Error (MAE) for each color component (RGBA) between two images of the same size.
  */
 CG_EXTERN AIComponents AIImageMeanAbsoluteErrorByComponent(AIImage* image1, AIImage* image2);
+
+/**
+ Find the Maximum Absolute Error of all components.
+ */
+CG_EXTERN CGFloat AIImageMaximumAbsoluteError(AIImage* image1, AIImage* image2);
 
 /**
  Find the Root Mean Square Error (RMSE) between two images of the same size. The RMSE puts more weight in large-magnitude variations than the MAE.

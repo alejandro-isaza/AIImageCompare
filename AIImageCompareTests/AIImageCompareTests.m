@@ -79,4 +79,17 @@
     XCTAssertEqualWithAccuracy(ratio, 0.00082, 0.00001, @"The ratio of different pixels should be around 0.00082");
 }
 
+- (void)testMaximumAbsoluteError {
+    UIImage* image = [self testImageWithName:@"1123"];
+    CGFloat error = AIImageMaximumAbsoluteError(image, image);
+    XCTAssertEqual(error, 0.0f, @"The maximum error of an image with itself should be 0");
+}
+
+- (void)testMaximumAbsoluteErrorNotZero {
+    UIImage* image1 = [self testImageWithName:@"1123"];
+    UIImage* image2 = [self testImageWithName:@"1124"];
+    CGFloat error = AIImageMaximumAbsoluteError(image1, image2);
+    XCTAssertEqual(error, 1.0f, @"The maximum error of different images 1");
+}
+
 @end
