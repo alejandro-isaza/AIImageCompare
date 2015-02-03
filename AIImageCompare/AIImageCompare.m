@@ -22,7 +22,7 @@
 
 static const NSUInteger kBytesPerPixel = 4;
 
-CGContextRef CreateRGBABitmapContext(CGImageRef inImage);
+static CGContextRef CreateRGBABitmapContext(CGImageRef inImage);
 
 #if TARGET_OS_IPHONE
 CGImageRef CGImageFromImage(AIImage* image) {
@@ -43,24 +43,24 @@ CG_EXTERN NSUInteger AIImageForEachByte(AIImage* image1, AIImage* image2, void (
 
     CGContextRef ctx1 = CreateRGBABitmapContext(cgimage1);
     CGContextRef ctx2 = CreateRGBABitmapContext(cgimage2);
-    
+
     const UInt8* data1 = CGBitmapContextGetData(ctx1);
     const UInt8* data2 = CGBitmapContextGetData(ctx2);
-    
+
     NSUInteger pixelCount = (NSUInteger)(CGBitmapContextGetWidth(ctx1) * CGBitmapContextGetHeight(ctx1));
     NSUInteger byteCount = pixelCount * kBytesPerPixel;
-    
+
     for (NSUInteger i = 0; i < byteCount; i += 1) {
         block(data1[i], data2[i]);
     }
-    
+
     CGContextRelease(ctx1);
     CGContextRelease(ctx2);
-    
+
     return byteCount;
 }
 
-CG_EXTERN NSUInteger AIImageForEachPixel(AIImage* image1, AIImage* image2, void (^block)(Pixel pixel1, Pixel pixel2)) {
+CG_EXTERN NSUInteger AIImageForEachPixel(AIImage* image1, AIImage* image2, void (^block)(AIPixel pixel1, AIPixel pixel2)) {
     CGImageRef cgimage1 = CGImageFromImage(image1);
     CGImageRef cgimage2 = CGImageFromImage(image2);
 
@@ -77,73 +77,75 @@ CG_EXTERN NSUInteger AIImageForEachPixel(AIImage* image1, AIImage* image2, void 
     NSUInteger byteCount = pixelCount * kBytesPerPixel;
 
     for (NSUInteger i = 0; i < byteCount; i += kBytesPerPixel) {
-        block(*(Pixel*)&data1[i], *(Pixel*)&data2[i]);
+        const AIPixel* pixel1 = (const AIPixel*)&data1[i];
+        const AIPixel* pixel2 = (const AIPixel*)&data2[i];
+        block(*pixel1, *pixel2);
     }
 
     CGContextRelease(ctx1);
     CGContextRelease(ctx2);
-    
+
     return pixelCount;
 }
 
 CG_EXTERN CGFloat AIImageMeanAbsoluteError(AIImage* image1, AIImage* image2) {
     __block CGFloat sum = 0;
-    
+
     NSUInteger byteCount = AIImageForEachByte(image1, image2, ^(UInt8 byte1, UInt8 byte2) {
-        CGFloat diff = (byte2 - byte1) / 255.0;
+        const CGFloat diff = (byte2 - byte1) / 255.0;
         sum += fabs(diff);
     });
-    
+
     return sum / (CGFloat)byteCount;
 }
 
 CG_EXTERN AIComponents AIImageMeanAbsoluteErrorByComponent(AIImage* image1, AIImage* image2) {
     __block AIComponents components = {0, 0, 0, 0};
-    
-    NSUInteger pixelCount = AIImageForEachPixel(image1, image2, ^(Pixel pixel1, Pixel pixel2) {
+
+    NSUInteger pixelCount = AIImageForEachPixel(image1, image2, ^(AIPixel pixel1, AIPixel pixel2) {
         components.red   += fabs((pixel2.red - pixel1.red) / 255.0);
         components.green += fabs((pixel2.green - pixel1.green) / 255.0);
         components.blue  += fabs((pixel2.blue - pixel1.blue) / 255.0);
         components.alpha += fabs((pixel2.alpha - pixel1.alpha) / 255.0);
     });
-    
+
     components.red   /= (CGFloat)pixelCount;
     components.green /= (CGFloat)pixelCount;
     components.blue  /= (CGFloat)pixelCount;
     components.alpha /= (CGFloat)pixelCount;
-    
+
     return components;
 }
 
 CG_EXTERN CGFloat AIImageMaximumAbsoluteError(AIImage* image1, AIImage* image2) {
     __block CGFloat maxDiff = 0;
-    
+
     AIImageForEachByte(image1, image2, ^(UInt8 byte1, UInt8 byte2) {
-        CGFloat diff = fabs((byte2 - byte1) / 255.0);
+        const CGFloat diff = fabs((byte2 - byte1) / 255.0);
         if (diff > maxDiff)
             maxDiff = diff;
     });
-    
+
     return maxDiff;
 }
 
 CG_EXTERN CGFloat AIImageRootMeanSquareError(AIImage* image1, AIImage* image2) {
     __block CGFloat sum = 0;
-    
+
     NSUInteger byteCount = AIImageForEachByte(image1, image2, ^(UInt8 byte1, UInt8 byte2) {
-        CGFloat diff = (byte2 - byte1) / 255.0;
+        const CGFloat diff = (byte2 - byte1) / 255.0;
         sum += diff * diff;
     });
-    
+
     return sqrt(sum / (CGFloat)byteCount);
 }
 
 CG_EXTERN NSUInteger AIImageDifferentPixelCount(AIImage* image1, AIImage* image2) {
     __block NSUInteger sum = 0;
-    
-    AIImageForEachPixel(image1, image2, ^(Pixel pixel1, Pixel pixel2) {
-        UInt32 value1 = *(UInt32*)&pixel1;
-        UInt32 value2 = *(UInt32*)&pixel2;
+
+    AIImageForEachPixel(image1, image2, ^(AIPixel pixel1, AIPixel pixel2) {
+        const UInt32 value1 = *(const UInt32*)&pixel1;
+        const UInt32 value2 = *(const UInt32*)&pixel2;
         if (value1 != value2)
             sum += 1;
     });
@@ -159,7 +161,7 @@ CG_EXTERN CGFloat AIImageDifferentPixelRatio(AIImage* image1, AIImage* image2) {
     return pixelCount / (pixelsWide * pixelsHigh);
 }
 
-CGContextRef CreateRGBABitmapContext(CGImageRef inImage) {
+static CGContextRef CreateRGBABitmapContext(CGImageRef inImage) {
     size_t pixelsWide = CGImageGetWidth(inImage);
     size_t pixelsHigh = CGImageGetHeight(inImage);
     size_t bitmapBytesPerRow = pixelsWide * kBytesPerPixel;

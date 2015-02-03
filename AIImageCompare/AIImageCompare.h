@@ -40,17 +40,21 @@ typedef struct {
 #else
     UInt8 red, green, blue, alpha;
 #endif
-} Pixel;
+} AIPixel;
 
 /**
- Perform the given block operation on each byte of the two images. Returns the byte count of the first image.
+ Perform the given block operation on each byte of the two images. Both images need to have the same pixel size.
+
+ @return the byte count
  */
 CG_EXTERN NSUInteger AIImageForEachByte(AIImage* image1, AIImage* image2, void (^block)(UInt8 byte1, UInt8 byte2));
 
 /**
- Perform the given block operation on each pixel of the two images. Returns the pixel count of the first image.
+ Perform the given block operation on each pixel of the two images. Both images need to have the same pixel size.
+ 
+ @return the pixel count
  */
-CG_EXTERN NSUInteger AIImageForEachPixel(AIImage* image1, AIImage* image2, void (^block)(Pixel pixel1, Pixel pixel2));
+CG_EXTERN NSUInteger AIImageForEachPixel(AIImage* image1, AIImage* image2, void (^block)(AIPixel pixel1, AIPixel pixel2));
 
 /**
  Find the Mean Absolute Error (MAE) between two images of the same size. This is the most common way of finding if two images differ and by what amount.
