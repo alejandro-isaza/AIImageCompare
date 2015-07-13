@@ -27,6 +27,14 @@ typedef UIImage AIImage;
 typedef NSImage AIImage;
 #endif
 
+
+//! Project version number for AIImageCompare.
+FOUNDATION_EXPORT double AIImageCompareVersionNumber;
+
+//! Project version string for AIImageCompare.
+FOUNDATION_EXPORT const unsigned char AIImageCompareVersionString[];
+
+
 typedef struct {
     CGFloat red;
     CGFloat blue;
